@@ -24,6 +24,7 @@ SCHEMA = {
         ("customer_id", "INTEGER REFERENCES customers(id)"),
         ("assignee_id", "INTEGER REFERENCES employees(id)"),
         ("title", "TEXT NOT NULL"),
+        ("body", "TEXT"),
         ("status", "TEXT DEFAULT 'open'"),
         ("created_at", "TEXT"),
     ],
@@ -88,10 +89,17 @@ def init_db():
             conn.execute(f"CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY AUTOINCREMENT, {body})")
 
 
-def list_rows(table, limit=500):
+def list_rows(table, limit=500, offset=0):
     _check(table)
     with _session() as conn:
-        return [dict(r) for r in conn.execute(f"SELECT * FROM {table} ORDER BY id DESC LIMIT ?", (limit,))]
+        sql = f"SELECT * FROM {table} ORDER BY id DESC LIMIT ? OFFSET ?"
+        return [dict(r) for r in conn.execute(sql, (limit, offset))]
+
+
+def count_rows(table):
+    _check(table)
+    with _session() as conn:
+        return conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
 
 
 def get_row(table, row_id):
@@ -110,6 +118,21 @@ def create_row(table, data):
             values,
         )
         return cur.lastrowid
+
+
+def create_rows(table, rows):
+    """Insert many rows in one transaction (all or none); -> their ids, in order."""
+    _check(table)
+    ids = []
+    with _session() as conn:
+        for data in rows:
+            cols, values = _known(table, data)
+            cur = conn.execute(
+                f"INSERT INTO {table} ({', '.join(cols)}) VALUES ({', '.join('?' * len(cols))})",
+                values,
+            )
+            ids.append(cur.lastrowid)
+    return ids
 
 
 def update_row(table, row_id, data):

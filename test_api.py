@@ -67,6 +67,20 @@ class ApiTest(unittest.TestCase):
             self.assertEqual(self.call("GET", "/customers?limit=" + urllib.request.quote(limit))[0], 400, limit)
         self.assertEqual(self.call("GET", "/customers?limit=3")[0], 200)
 
+    def test_offset_pages_and_total_header(self):
+        for n in ("Page One", "Page Two", "Page Three"):
+            self.call("POST", "/products", {"name": n})
+        req = urllib.request.Request(self.base + "/products?limit=1&offset=1")
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            total = int(resp.headers["X-Total-Count"])
+            page = json.loads(resp.read())
+        self.assertGreaterEqual(total, 3)
+        self.assertEqual(len(page), 1)
+        first = self.call("GET", "/products?limit=2")[1]
+        self.assertEqual(page[0]["id"], first[1]["id"])
+        for skip in ("-1", "x", "²"):
+            self.assertEqual(self.call("GET", "/products?offset=" + urllib.request.quote(skip))[0], 400, skip)
+
     def test_odd_digit_id_is_404(self):
         self.assertEqual(self.call("GET", "/customers/" + urllib.request.quote("²"))[0], 404)
 

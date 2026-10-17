@@ -1,7 +1,8 @@
 """ACME Inc. REST API (stdlib only). Other ecosystem projects read and write through this.
 
 GET    /api/                 -> table list
-GET    /api/{table}          -> rows, newest first (?limit=N, 1-500, default 500)
+GET    /api/{table}          -> rows, newest first (?limit=N, 1-500, default 500; ?offset=N to page);
+                                the X-Total-Count header holds the table's row count
 GET    /api/{table}/{id}     -> one row
 POST   /api/{table}          -> create, returns {"id": n}
 PATCH  /api/{table}/{id}     -> update
@@ -47,11 +48,14 @@ def suggest(miss, vocab, limit=3):
 
 
 class Handler(BaseHTTPRequestHandler):
-    def _send(self, code, body):
+    def _send(self, code, body, headers=None):
         data = json.dumps(body).encode()
         self.send_response(code)
         self.send_header("Content-Type", "application/json")
         self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Expose-Headers", "X-Total-Count")
+        for k, v in (headers or {}).items():
+            self.send_header(k, v)
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
         self.wfile.write(data)
@@ -109,10 +113,14 @@ class Handler(BaseHTTPRequestHandler):
         if not table:
             return self._not_found()
         if row_id is None:
-            raw = parse_qs(url.query).get("limit", [str(MAX_LIMIT)])[0]
+            query = parse_qs(url.query)
+            raw = query.get("limit", [str(MAX_LIMIT)])[0]
             if not (raw.isascii() and raw.isdecimal()) or not 1 <= int(raw) <= MAX_LIMIT:
                 return self._send(400, {"error": f"limit must be a whole number from 1 to {MAX_LIMIT}"})
-            return self._send(200, db.list_rows(table, int(raw)))
+            skip = query.get("offset", ["0"])[0]
+            if not (skip.isascii() and skip.isdecimal()):
+                return self._send(400, {"error": "offset must be a whole number from 0"})
+            return self._send(200, db.list_rows(table, int(raw), int(skip)), {"X-Total-Count": str(db.count_rows(table))})
         row = db.get_row(table, row_id)
         return self._send(200, row) if row else self._send(404, {"error": "not found"})
 

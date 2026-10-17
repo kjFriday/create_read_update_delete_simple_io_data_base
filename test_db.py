@@ -37,6 +37,18 @@ class DbTest(unittest.TestCase):
         ids = [db.create_row("products", {"name": f"Kit {i}"}) for i in range(5)]
         self.assertEqual([r["id"] for r in db.list_rows("products", 2)], ids[:-3:-1])
 
+    def test_offset_and_count(self):
+        ids = [db.create_row("products", {"name": f"Kit {i}"}) for i in range(5)]
+        self.assertEqual([r["id"] for r in db.list_rows("products", 2, 2)], [ids[2], ids[1]])
+        self.assertEqual(db.count_rows("products"), 5)
+
+    def test_create_rows_is_all_or_none(self):
+        ids = db.create_rows("customers", [{"name": "Maria Garcia"}, {"name": "Kenji Sato"}])
+        self.assertEqual([db.get_row("customers", i)["name"] for i in ids], ["Maria Garcia", "Kenji Sato"])
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.create_rows("customers", [{"name": "Ana Silva"}, {"city": "no name"}])
+        self.assertEqual(db.count_rows("customers"), 2)
+
     def test_unknown_table_raises_key_error(self):
         for call in (lambda: db.list_rows("nope"), lambda: db.create_row("nope", {"name": "x"})):
             with self.assertRaises(KeyError):
