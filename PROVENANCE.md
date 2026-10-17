@@ -11,6 +11,8 @@ Each adapted file and the staged source it came from. Sources are identified by 
 | `sigil.py`, `test_sigil.py` | `src/ui/Sigil.java` (`F90BEC86A4F87669A670CE07713C4AAAE38E36A64B3862213328A6072F14ED81`) | `grid()`, `tint()`, plus the 6x6x6 cube from `rgb256` inlined | `tint()` returns an `(r, g, b)` tuple. The FILL comment is corrected to about 51.6% of cells lit. The port reproduces all three of the source's own test vectors exactly. The tests here use neutral names, with vectors regenerated from the port. |
 | `api.py` (`edit_distance`, `suggest`, `_not_found`, `_body`) | `suggest.go` (`CA5E1F3D5330539C4DCE51140153B59C335E7FCDDE6240FFA92853D64FBD83F7`) | `editDistance()`, `suggest()` | Go to Python. The vocabulary is passed in (the table names). Both sides are lowercased. `suggest` returns the single closest name within 3 edits. `_body` now runs `textsafe.clean` on string values. |
 
+`api.py` (the REST API) was retired in 0.2.0, when the programs started sharing the database by path; its rows below are kept as history, and the file stays in git history.
+
 ## Follow-up fixes (no staged source)
 
 | File | Change |
