@@ -1,0 +1,14 @@
+stage	opera house	2200	6500
+stage	concert hall	2000	5500
+stage	theatre	700	3800
+stage	music venue	600	2800
+stage	amphitheatre	3000	4200
+stage	performing arts	900	4200
+stage	cinema	260	1250
+day	mon	0.60
+day	tue	0.65
+day	wed	0.75
+day	thu	0.90
+day	fri	1.35
+day	sat	1.55
+day	sun	1.20
