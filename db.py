@@ -1,12 +1,14 @@
-"""ACME Inc. data layer — one SQLite file every ecosystem project reads through the API."""
+"""ACME Inc. data layer — the shared SQLite file every ACME program opens by path (see paths.py)."""
 
 import os
 import sqlite3
 from contextlib import contextmanager
 
+import paths
 import textsafe
 
-DB_PATH = os.environ.get("ACME_DB", os.path.join(os.path.dirname(__file__), "acme.db"))
+# a module attribute, so main() (--db) and the tests can point it elsewhere
+DB_PATH = paths.resolve_db()
 
 # table -> ordered (column, sql type); every table also gets `id INTEGER PRIMARY KEY`
 SCHEMA = {
@@ -63,11 +65,23 @@ def _known(table, data):
     return cols, values
 
 
+def ddl():
+    """The CREATE TABLE statements for SCHEMA, in order; export_mock.py ships them as mock/schema.sql."""
+    out = []
+    for table, cols in SCHEMA.items():
+        body = ", ".join(f"{c} {t}" for c, t in cols)
+        out.append(f"CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY AUTOINCREMENT, {body})")
+    return out
+
+
 def connect():
-    conn = sqlite3.connect(DB_PATH)
+    folder = os.path.dirname(os.path.abspath(DB_PATH))
+    os.makedirs(folder, exist_ok=True)
+    conn = sqlite3.connect(DB_PATH, timeout=5)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
     conn.execute("PRAGMA foreign_keys=ON")
+    conn.execute("PRAGMA busy_timeout=5000")
     return conn
 
 
@@ -84,9 +98,8 @@ def _session():
 
 def init_db():
     with _session() as conn:
-        for table, cols in SCHEMA.items():
-            body = ", ".join(f"{c} {t}" for c, t in cols)
-            conn.execute(f"CREATE TABLE IF NOT EXISTS {table} (id INTEGER PRIMARY KEY AUTOINCREMENT, {body})")
+        for statement in ddl():
+            conn.execute(statement)
 
 
 def list_rows(table, limit=500, offset=0):
