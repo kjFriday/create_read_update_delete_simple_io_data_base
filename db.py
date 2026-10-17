@@ -4,6 +4,8 @@ import os
 import sqlite3
 from contextlib import contextmanager
 
+import textsafe
+
 DB_PATH = os.environ.get("ACME_DB", os.path.join(os.path.dirname(__file__), "acme.db"))
 
 # table -> ordered (column, sql type); every table also gets `id INTEGER PRIMARY KEY`
@@ -35,6 +37,10 @@ SCHEMA = {
 }
 
 
+# columns that hold machine data (JSON, file paths): still cleaned, never cut short
+UNCAPPED = {"payload", "path"}
+
+
 def columns(table):
     return [name for name, _ in SCHEMA[table]]
 
@@ -42,6 +48,18 @@ def columns(table):
 def _check(table):
     if table not in SCHEMA:
         raise KeyError(table)
+
+
+def _known(table, data):
+    """The table's columns present in data, cleaned; every write path (API and GUI) goes through here."""
+    cols = [c for c in columns(table) if c in data]
+    if not cols:
+        raise ValueError("no known columns")
+    values = [
+        textsafe.clean(data[c], None if c in UNCAPPED else textsafe.LIMIT) if isinstance(data[c], str) else data[c]
+        for c in cols
+    ]
+    return cols, values
 
 
 def connect():
@@ -85,24 +103,22 @@ def get_row(table, row_id):
 
 def create_row(table, data):
     _check(table)
-    cols = [c for c in columns(table) if c in data]
+    cols, values = _known(table, data)
     with _session() as conn:
         cur = conn.execute(
             f"INSERT INTO {table} ({', '.join(cols)}) VALUES ({', '.join('?' * len(cols))})",
-            [data[c] for c in cols],
+            values,
         )
         return cur.lastrowid
 
 
 def update_row(table, row_id, data):
     _check(table)
-    cols = [c for c in columns(table) if c in data]
-    if not cols:
-        return 0
+    cols, values = _known(table, data)
     with _session() as conn:
         cur = conn.execute(
             f"UPDATE {table} SET {', '.join(c + ' = ?' for c in cols)} WHERE id = ?",
-            [data[c] for c in cols] + [row_id],
+            values + [row_id],
         )
         return cur.rowcount
 

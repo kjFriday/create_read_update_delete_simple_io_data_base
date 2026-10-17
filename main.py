@@ -86,7 +86,8 @@ class TablePage(ttk.Frame):
         if row_id is None:
             return
         try:
-            db.update_row(self.table, row_id, {c: e.get() for c, e in self.entries.items()})
+            # a blank field clears the value (NULL), so NOT NULL columns refuse it instead of storing ''
+            db.update_row(self.table, row_id, {c: e.get() or None for c, e in self.entries.items()})
         except Exception as e:
             messagebox.showerror("Database Error", str(e))
             return
