@@ -19,6 +19,9 @@ Each adapted file and the staged source it came from. Sources are identified by 
 | `textsafe.py`, `test_textsafe.py` | A negative `limit` is treated as 0 instead of slicing from the end. Test added. |
 | `db.py` | Each call now closes its connection (`_session()`), so the database file is not held open between calls. The schema and `connect()` are unchanged. |
 | `seed.py` | `seed()` also removes stale `-wal` and `-shm` files before rebuilding, and can now be called repeatedly in one process. |
+| `db.py` | String cleaning (`textsafe.clean`, `UNCAPPED`) moved here from `api._body`, so the GUI's writes are cleaned too. `create_row`/`update_row` raise `ValueError` when no known column is given. |
+| `api.py` | `_body` only parses the JSON and refuses a body that is not an object; a negative `Content-Length` reads as 0. A bad `?limit` answers 400; constraint failures answer 409 instead of dropping the connection; a PATCH with no known columns answers 400, not 404. Row ids must be ASCII digits. The table list matches `/api/` with a query string. Tests: `test_api.py`, `test_db.py`. |
+| `main.py` | Update sends blank fields as NULL, so a NOT NULL column refuses them instead of storing `''`. |
 
 ## Data (`data/`, format in `data/README.md`)
 

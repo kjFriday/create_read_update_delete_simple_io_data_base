@@ -1,30 +1,30 @@
 """ACME Inc. REST API (stdlib only). Other ecosystem projects read and write through this.
 
 GET    /api/                 -> table list
-GET    /api/{table}          -> rows (?limit=N)
+GET    /api/{table}          -> rows, newest first (?limit=N, 1-500, default 500)
 GET    /api/{table}/{id}     -> one row
 POST   /api/{table}          -> create, returns {"id": n}
 PATCH  /api/{table}/{id}     -> update
 DELETE /api/{table}/{id}     -> delete
 
 An unknown table answers 404 with "did_you_mean" when a table name is within 3 edits.
-String values in POST/PATCH bodies pass through textsafe.clean before they reach the database;
-they are capped at textsafe.LIMIT characters, except the UNCAPPED columns (events.payload, documents.path).
+400: bad JSON, a body that is not an object, no known columns, or a bad ?limit.
+409: a constraint failed (NOT NULL, or a row that other rows still reference).
+String values are cleaned by db (textsafe.clean) before they are stored;
+they are capped at textsafe.LIMIT characters, except db.UNCAPPED columns (events.payload, documents.path).
 """
 
 import json
 import os
+import sqlite3
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, urlparse
 
 import db
-import textsafe
 
 HOST = os.environ.get("ACME_HOST", "127.0.0.1")
 PORT = int(os.environ.get("ACME_PORT", "8700"))
-
-# columns that hold machine data (JSON, file paths): still cleaned, never cut short
-UNCAPPED = {"payload", "path"}
+MAX_LIMIT = 500
 
 
 def edit_distance(a, b):
@@ -64,7 +64,8 @@ class Handler(BaseHTTPRequestHandler):
         table = parts[1] if len(parts) > 1 else None
         if table is not None and table not in db.SCHEMA:
             return False, None, url
-        row_id = int(parts[2]) if len(parts) == 3 and parts[2].isdigit() else None
+        # isdigit() also accepts characters like "²" that int() refuses
+        row_id = int(parts[2]) if len(parts) == 3 and parts[2].isascii() and parts[2].isdecimal() else None
         if len(parts) == 3 and row_id is None:
             return None, None, url
         return table, row_id, url
@@ -79,12 +80,20 @@ class Handler(BaseHTTPRequestHandler):
         return self._send(404, body)
 
     def _body(self):
-        n = int(self.headers.get("Content-Length") or 0)
+        n = max(int(self.headers.get("Content-Length") or 0), 0)  # read(-1) would wait for EOF
         data = json.loads(self.rfile.read(n) or b"{}")
-        return {
-            k: textsafe.clean(v, None if k in UNCAPPED else textsafe.LIMIT) if isinstance(v, str) else v
-            for k, v in data.items()
-        }
+        if not isinstance(data, dict):
+            raise ValueError("body must be a JSON object")
+        return data
+
+    def _write(self, code, fn):
+        """Run a db write; constraint failures answer 409, any other bad input 400."""
+        try:
+            return self._send(code, fn())
+        except sqlite3.IntegrityError as e:
+            return self._send(409, {"error": str(e)})
+        except Exception as e:  # bad JSON, no known columns, bad types
+            return self._send(400, {"error": str(e)})
 
     def do_OPTIONS(self):
         self.send_response(204)
@@ -95,13 +104,15 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         table, row_id, url = self._route()
-        if table is None and self.path.rstrip("/") == "/api":
+        if table is None and url.path.rstrip("/") == "/api":
             return self._send(200, {"company": "ACME Inc. (fictional)", "tables": {t: db.columns(t) for t in db.SCHEMA}})
         if not table:
             return self._not_found()
         if row_id is None:
-            limit = int(parse_qs(url.query).get("limit", ["500"])[0])
-            return self._send(200, db.list_rows(table, limit))
+            raw = parse_qs(url.query).get("limit", [str(MAX_LIMIT)])[0]
+            if not (raw.isascii() and raw.isdecimal()) or not 1 <= int(raw) <= MAX_LIMIT:
+                return self._send(400, {"error": f"limit must be a whole number from 1 to {MAX_LIMIT}"})
+            return self._send(200, db.list_rows(table, int(raw)))
         row = db.get_row(table, row_id)
         return self._send(200, row) if row else self._send(404, {"error": "not found"})
 
@@ -109,27 +120,27 @@ class Handler(BaseHTTPRequestHandler):
         table, row_id, _ = self._route()
         if not table or row_id is not None:
             return self._not_found()
-        try:
-            return self._send(201, {"id": db.create_row(table, self._body())})
-        except Exception as e:  # bad JSON or constraint failure
-            return self._send(400, {"error": str(e)})
+        return self._write(201, lambda: {"id": db.create_row(table, self._body())})
 
     def do_PATCH(self):
         table, row_id, _ = self._route()
         if not table or row_id is None:
             return self._not_found()
         try:
-            n = db.update_row(table, row_id, self._body())
+            data = self._body()
         except Exception as e:
             return self._send(400, {"error": str(e)})
-        return self._send(200, {"updated": n}) if n else self._send(404, {"error": "not found"})
+        if db.get_row(table, row_id) is None:
+            return self._send(404, {"error": "not found"})
+        return self._write(200, lambda: {"updated": db.update_row(table, row_id, data)})
 
     def do_DELETE(self):
         table, row_id, _ = self._route()
         if not table or row_id is None:
             return self._not_found()
-        n = db.delete_row(table, row_id)
-        return self._send(200, {"deleted": n}) if n else self._send(404, {"error": "not found"})
+        if db.get_row(table, row_id) is None:
+            return self._send(404, {"error": "not found"})
+        return self._write(200, lambda: {"deleted": db.delete_row(table, row_id)})
 
 
 def serve():
