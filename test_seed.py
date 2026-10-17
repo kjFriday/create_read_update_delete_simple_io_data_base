@@ -3,6 +3,7 @@
 import json
 import os
 import random
+import sqlite3
 import tempfile
 import unittest
 
@@ -75,6 +76,39 @@ class SeedTest(unittest.TestCase):
         self.assertTrue(all(d["order_id"] in orders for d in load("document_mover_and_changer", "documents")))
         authors = {e["id"] for e in load("content_management_system", "employees")}
         self.assertTrue(all(p["author_id"] in authors for p in load("content_management_system", "posts")))
+
+
+class ReseedTest(unittest.TestCase):
+    """Reseeding a shared database: back it up, then empty it in place (other programs keep it open)."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+        self.old_path = db.DB_PATH
+        db.DB_PATH = os.path.join(self.tmp.name, "acme.db")
+        db.init_db()
+        cid = db.create_row("customers", {"name": "Ada Reyes"})
+        db.create_row("tickets", {"customer_id": cid, "title": "Invoice question"})
+
+    def tearDown(self):
+        db.DB_PATH = self.old_path
+        self.tmp.cleanup()
+
+    def test_backup_copies_every_row(self):
+        from datetime import datetime
+        target = seed.backup(when=datetime(2026, 10, 17, 9, 30, 5))
+        self.assertEqual(os.path.basename(target), "acme-20261017-093005.db")
+        with sqlite3.connect(target) as conn:
+            self.assertEqual(conn.execute("SELECT title FROM tickets").fetchall(), [("Invoice question",)])
+        self.assertIsNone(seed.backup(os.path.join(self.tmp.name, "missing.db")))
+
+    def test_clear_in_place_while_another_connection_is_open(self):
+        other = sqlite3.connect(db.DB_PATH)
+        try:
+            seed.clear()
+            self.assertEqual(other.execute("SELECT COUNT(*) FROM tickets").fetchone()[0], 0)
+            self.assertEqual(db.create_row("customers", {"name": "New"}), 1)  # ids restart
+        finally:
+            other.close()
 
 
 class LoremTest(unittest.TestCase):

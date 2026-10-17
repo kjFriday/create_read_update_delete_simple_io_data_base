@@ -11,6 +11,8 @@ import csv
 import json
 import os
 import random
+import sqlite3
+import sys
 from datetime import datetime, timedelta
 
 import db
@@ -116,12 +118,56 @@ def stamp(when):
     return when.isoformat(timespec="minutes")
 
 
-def seed(base_seed=42):
-    # start from an empty file; a leftover -wal/-shm must not be replayed into the new database
-    for path in (db.DB_PATH, db.DB_PATH + "-wal", db.DB_PATH + "-shm"):
-        if os.path.exists(path):
-            os.remove(path)
-    db.init_db()
+# children before parents, so clearing never trips a foreign key
+CLEAR_ORDER = ["documents", "tickets", "orders", "events", "products", "customers", "employees"]
+
+
+def _counts(conn):
+    return {t: conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in db.SCHEMA}
+
+
+def backup(path=None, when=None):
+    """Copy the database (with any WAL content) to acme-YYYYMMDD-HHMMSS.db beside it and check the copy's
+    row counts; -> the backup path, or None when there is nothing to keep."""
+    path = path or db.DB_PATH
+    if not os.path.exists(path) or os.path.getsize(path) == 0:
+        return None
+    stem, ext = os.path.splitext(path)
+    target = f"{stem}-{(when or datetime.now()):%Y%m%d-%H%M%S}{ext or '.db'}"
+    src, dst = sqlite3.connect(path, timeout=5), sqlite3.connect(target)
+    try:
+        src.backup(dst)
+        tables = {r[0] for r in src.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+        if set(db.SCHEMA) <= tables and _counts(src) != _counts(dst):
+            raise RuntimeError(f"backup {target} does not match the database")
+    finally:
+        src.close()
+        dst.close()
+    return target
+
+
+def clear():
+    """Empty every table and restart the ids, in one transaction, without removing the file
+    (other programs may have it open)."""
+    with db._session() as conn:
+        for table in CLEAR_ORDER:
+            conn.execute(f"DELETE FROM {table}")
+        conn.execute("DELETE FROM sqlite_sequence")
+
+
+def seed(base_seed=42, fresh=False):
+    """Fill the database. fresh=True rebuilds the file from nothing (byte-identical every run);
+    otherwise the existing file is backed up, emptied in place and refilled."""
+    if fresh:
+        # a leftover -wal/-shm must not be replayed into the new database
+        for path in (db.DB_PATH, db.DB_PATH + "-wal", db.DB_PATH + "-shm"):
+            if os.path.exists(path):
+                os.remove(path)
+        db.init_db()
+    else:
+        db.init_db()
+        backup()
+        clear()
     start = datetime(2026, 1, 1)
     now = start + timedelta(days=271)  # the seeded "today": later events are still pending
     venues = load_venues()
@@ -218,5 +264,9 @@ def seed(base_seed=42):
 
 
 if __name__ == "__main__":
-    seed()
+    # python seed.py [--fresh] [--db PATH]
+    args = sys.argv[1:]
+    if "--db" in args:
+        db.DB_PATH = os.path.abspath(args[args.index("--db") + 1])
+    seed(fresh="--fresh" in args)
     print(f"seeded {db.DB_PATH}")
