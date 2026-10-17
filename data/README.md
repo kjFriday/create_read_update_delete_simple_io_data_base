@@ -29,6 +29,14 @@ Each row becomes one product, named `<name> Toolkit`.
 
 The numbers are invented starting values.
 
+## first_names.txt, last_names.txt: people (one name per line)
+
+Self-authored lists of common given names and surnames from many languages. `seed.py` pairs one of each
+at random for every employee and customer, redrawing until the pair is unused, so names are realistic but
+belong to no one. Emails are built from the name on the reserved `.example` domains.
+
+Free text (ticket titles after the issue type, ticket bodies, order notes) is lorem ipsum from `lorem.py`.
+
 ## seasons.tsv: calendar events (tab-separated, three row kinds)
 
 - `instant  NAME  yyyy-mm-dd  -`: a solstice or equinox (factual dates).

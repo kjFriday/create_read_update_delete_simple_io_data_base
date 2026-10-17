@@ -2,7 +2,9 @@
 
 Each record gets its own generator, seeded by _mix(base_seed ^ table salt, record number), so a
 change to one table's row count or draws never shifts the values in another table.
-Products, cities and calendar events come from the files in data/ (see data/README.md).
+Products, cities, names and calendar events come from the files in data/ (see data/README.md).
+People are random first + last name pairs from common-name lists, so no one is a real person;
+free text (ticket bodies, notes) is lorem ipsum.
 """
 
 import csv
@@ -12,18 +14,29 @@ import random
 from datetime import datetime, timedelta
 
 import db
+import lorem
 
 DATA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 MASK = (1 << 64) - 1
 
 # fixed per-table salts; never hash(), which is randomised per process for strings
-SALTS = {"employees": 0x101, "customers": 0x202, "products": 0x303, "orders": 0x404, "tickets": 0x505, "events": 0x606}
+SALTS = {
+    "employees": 0x101, "customers": 0x202, "products": 0x303, "orders": 0x404,
+    "tickets": 0x505, "events": 0x606, "documents": 0x707,
+}
 
-FIRST = ["Ada", "Ben", "Cora", "Dev", "Eli", "Fay", "Gus", "Hana", "Ivo", "Juno", "Kai", "Lena", "Milo", "Nia", "Otto"]
-LAST = ["Reyes", "Park", "Okafor", "Lind", "Moreau", "Sato", "Quinn", "Vale", "Hart", "Novak"]
-ROLES = ["Support", "Support", "Sales", "Engineer", "Manager"]
+# rows per table; sized so every list view needs paging (the API serves at most 500 per call)
+COUNTS = {"employees": 120, "customers": 3000, "orders": 15000, "tickets": 2000}
+
+ROLES = ["Support"] * 4 + ["Sales"] * 3 + ["Engineer"] * 2 + ["Billing", "Logistics", "Manager"]
 TIER_PRICE = {"basic": (15, 40), "lite": (40, 90), "standard": (90, 180), "pro": (180, 400)}
-ISSUES = ["Order arrived damaged", "Invoice question", "Can't log in", "Request refund", "Shipping delay", "Upgrade plan"]
+ISSUES = [
+    "Order arrived damaged", "Invoice question", "Can't log in", "Request refund", "Shipping delay",
+    "Upgrade plan", "Wrong item sent", "Licence key missing", "Billing address change", "Cancel order",
+    "Download link expired", "Duplicate charge", "Feature request", "Account locked", "Tax receipt needed",
+]
+STATUSES = ["open", "open", "in_progress", "closed", "closed"]
+DOC_KINDS = ["invoice"] * 4 + ["receipt", "packing_slip"]
 WEEKDAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
 
 
@@ -76,12 +89,30 @@ def busy_day(rng, start, span, weekday):
             return when
 
 
-def name(rng):
-    return f"{rng.choice(FIRST)} {rng.choice(LAST)}"
+def load_names(filename):
+    with open(os.path.join(DATA, filename), encoding="utf-8") as f:
+        return [line.strip() for line in f if line.strip()]
+
+
+FIRST = load_names("first_names.txt")
+LAST = load_names("last_names.txt")
+
+
+def name(rng, taken):
+    """A first + last pair not yet in `taken` (which it joins); redraws on a clash."""
+    while True:
+        n = f"{rng.choice(FIRST)} {rng.choice(LAST)}"
+        if n not in taken:
+            taken.add(n)
+            return n
 
 
 def email(n, domain):
     return n.lower().replace(" ", ".") + "@" + domain
+
+
+def stamp(when):
+    return when.isoformat(timespec="minutes")
 
 
 def seed(base_seed=42):
@@ -95,48 +126,61 @@ def seed(base_seed=42):
     venues = load_venues()
     stages, weekday = load_stages()
 
-    employees = []
-    for i in range(12):
+    taken = set()  # one name per person across staff and customers
+    rows = []
+    for i in range(COUNTS["employees"]):
         r = _rng(base_seed, "employees", i)
-        n = name(r)
-        employees.append(db.create_row("employees", {"name": n, "role": r.choice(ROLES), "email": email(n, "acme.example")}))
+        n = name(r, taken)
+        rows.append({"name": n, "role": r.choice(ROLES), "email": email(n, "acme.example")})
+    employees = db.create_rows("employees", rows)
+    support = [eid for eid, row in zip(employees, rows) if row["role"] in ("Support", "Billing", "Logistics")]
 
-    customers = []
-    for i in range(50):
+    rows = []
+    for i in range(COUNTS["customers"]):
         r = _rng(base_seed, "customers", i)
-        n = name(r)
-        customers.append(db.create_row("customers", {"name": n, "email": email(n, "mail.example"), "city": r.choice(venues)["city"]}))
+        n = name(r, taken)
+        rows.append({"name": n, "email": email(n, "mail.example"), "city": r.choice(venues)["city"]})
+    customers = db.create_rows("customers", rows)
 
-    products = []
-    for i, item in enumerate(load_products()):
+    items = load_products()
+    rows = []
+    for i, item in enumerate(items):
         r = _rng(base_seed, "products", i)
-        price = round(r.uniform(*TIER_PRICE[item["tier"]]), 2)
-        products.append((db.create_row("products", {
-            "name": f"{item['name']} Toolkit", "category": item["category"].title(), "price": price,
-        }), price))
+        rows.append({"name": f"{item['name']} Toolkit", "category": item["category"].title(),
+                     "price": round(r.uniform(*TIER_PRICE[item["tier"]]), 2)})
+    products = list(zip(db.create_rows("products", rows), [row["price"] for row in rows]))
 
-    for i in range(300):
+    orders, events, documents = [], [], []
+    for i in range(COUNTS["orders"]):
         r = _rng(base_seed, "orders", i)
         pid, price = r.choice(products)
         qty = r.randint(1, 5)
         when = busy_day(r, start, 270, weekday) + timedelta(minutes=r.randint(0, 1439))
-        oid = db.create_row("orders", {
-            "customer_id": r.choice(customers), "product_id": pid, "quantity": qty,
-            "total": round(price * qty, 2), "ordered_at": when.isoformat(timespec="minutes"),
-        })
-        db.create_row("events", {
-            "kind": "order.created", "payload": json.dumps({"order_id": oid}),
-            "status": "sent", "created_at": when.isoformat(timespec="minutes"),
-        })
+        orders.append(({"customer_id": r.choice(customers), "product_id": pid, "quantity": qty,
+                        "total": round(price * qty, 2), "ordered_at": stamp(when)}, when))
+    order_ids = db.create_rows("orders", [o for o, _ in orders])
+    for i, (oid, (_, when)) in enumerate(zip(order_ids, orders)):
+        r = _rng(base_seed, "documents", i)
+        kind = r.choice(DOC_KINDS)
+        documents.append({"order_id": oid, "kind": kind, "path": f"{kind}s/{when:%Y/%m}/{kind[:3].upper()}-{oid:06d}.txt"})
+        events.append({"kind": "order.created", "payload": json.dumps({"order_id": oid, "note": lorem.sentence(r)}),
+                       "status": "sent", "created_at": stamp(when)})
+    db.create_rows("documents", documents)
 
-    for i in range(40):
+    rows = []
+    for i in range(COUNTS["tickets"]):
         r = _rng(base_seed, "tickets", i)
-        when = start + timedelta(days=r.randint(0, 270))
-        db.create_row("tickets", {
-            "customer_id": r.choice(customers), "assignee_id": r.choice(employees),
-            "title": r.choice(ISSUES), "status": r.choice(["open", "open", "in_progress", "closed"]),
-            "created_at": when.isoformat(timespec="minutes"),
+        when = start + timedelta(days=r.randint(0, 270), minutes=r.randint(0, 1439))
+        rows.append({
+            "customer_id": r.choice(customers), "assignee_id": r.choice(support) if r.random() < 0.85 else None,
+            "title": f"{r.choice(ISSUES)}: {lorem.words(r, r.randint(2, 4))}",
+            "body": lorem.paragraph(r, limit=240), "status": r.choice(STATUSES), "created_at": stamp(when),
         })
+    for tid, row in zip(db.create_rows("tickets", rows), rows):
+        events.append({"kind": "ticket.created", "payload": json.dumps({"ticket_id": tid, "customer_id": row["customer_id"]}),
+                       "status": "sent", "created_at": row["created_at"]})
+    events.sort(key=lambda e: e["created_at"])
+    db.create_rows("events", events)
 
     # calendar rows from seasons.tsv; yearly rows are placed in the seeded year
     for kind, label, first, last in _rows("seasons.tsv"):
