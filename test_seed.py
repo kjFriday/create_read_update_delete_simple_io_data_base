@@ -46,6 +46,15 @@ class SeedTest(unittest.TestCase):
             self.assertTrue(set(filler.split()) <= vocab)
             self.assertLessEqual(len(t["body"]), 240)
 
+    def test_recent_events_wait_for_the_dispatcher(self):
+        events = db.list_rows("events", -1)
+        pending = [e for e in events if e["status"] == "pending" and e["kind"] in ("order.created", "ticket.created")]
+        self.assertTrue(pending)
+        self.assertTrue(all(e["created_at"] >= "2026-09-26" for e in pending))
+        for e in events:
+            if e["kind"] in ("order.created", "ticket.created"):
+                self.assertIn("customer_id", json.loads(e["payload"]))
+
     def test_export_slices_keep_references(self):
         out = os.path.join(self.tmp.name, "root")
         for project in export_mock.snapshots():

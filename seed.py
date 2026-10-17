@@ -27,6 +27,7 @@ SALTS = {
 
 # rows per table; sized so every list view needs paging (the API serves at most 500 per call)
 COUNTS = {"employees": 120, "customers": 3000, "orders": 15000, "tickets": 2000}
+QUEUE_DAYS = 3  # order/ticket events from the seeded today's last days stay "pending"
 
 ROLES = ["Support"] * 4 + ["Sales"] * 3 + ["Engineer"] * 2 + ["Billing", "Logistics", "Manager"]
 TIER_PRICE = {"basic": (15, 40), "lite": (40, 90), "standard": (90, 180), "pro": (180, 400)}
@@ -159,12 +160,14 @@ def seed(base_seed=42):
         orders.append(({"customer_id": r.choice(customers), "product_id": pid, "quantity": qty,
                         "total": round(price * qty, 2), "ordered_at": stamp(when)}, when))
     order_ids = db.create_rows("orders", [o for o, _ in orders])
-    for i, (oid, (_, when)) in enumerate(zip(order_ids, orders)):
+    queued = now - timedelta(days=QUEUE_DAYS)  # newer notifications are still waiting for the dispatcher
+    for i, (oid, (order, when)) in enumerate(zip(order_ids, orders)):
         r = _rng(base_seed, "documents", i)
         kind = r.choice(DOC_KINDS)
         documents.append({"order_id": oid, "kind": kind, "path": f"{kind}s/{when:%Y/%m}/{kind[:3].upper()}-{oid:06d}.txt"})
-        events.append({"kind": "order.created", "payload": json.dumps({"order_id": oid, "note": lorem.sentence(r)}),
-                       "status": "sent", "created_at": stamp(when)})
+        payload = {"order_id": oid, "customer_id": order["customer_id"], "note": lorem.sentence(r)}
+        events.append({"kind": "order.created", "payload": json.dumps(payload),
+                       "status": "pending" if when >= queued else "sent", "created_at": stamp(when)})
     db.create_rows("documents", documents)
 
     rows = []
@@ -178,7 +181,8 @@ def seed(base_seed=42):
         })
     for tid, row in zip(db.create_rows("tickets", rows), rows):
         events.append({"kind": "ticket.created", "payload": json.dumps({"ticket_id": tid, "customer_id": row["customer_id"]}),
-                       "status": "sent", "created_at": row["created_at"]})
+                       "status": "pending" if row["created_at"] >= stamp(queued) else "sent",
+                       "created_at": row["created_at"]})
     events.sort(key=lambda e: e["created_at"])
     db.create_rows("events", events)
 
