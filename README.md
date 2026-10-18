@@ -40,6 +40,8 @@ shortcut runs `pythonw.exe` from the Python that installed it, so reinstall afte
 
 Other flags: `--version`, `--smoke FILE` (open the window, write a JSON report, close).
 
+`wizard-maker.exe build setup.json` (ACME Wizard Maker) makes the setup, `dist\ACME CRUD Hub-0.2.0-setup.exe`.
+
 ## Seed and snapshots
 
 ```bash
