@@ -1,0 +1,27 @@
+{
+  "id": "ACME.Hub",
+  "name": "ACME CRUD Hub",
+  "version": "0.2.0",
+  "publisher": "ACME Inc. (fictional)",
+  "group": "ACME Inc",
+  "icon": "icon/app.ico",
+  "files": [
+    {"from": "main.py"},
+    {"from": "db.py"},
+    {"from": "paths.py"},
+    {"from": "seed.py"},
+    {"from": "lorem.py"},
+    {"from": "textsafe.py"},
+    {"from": "installer.py"},
+    {"from": "version.py"},
+    {"from": "data", "to": "data"},
+    {"from": "icon", "to": "icon"}
+  ],
+  "exclude": ["test_*", "__pycache__", "*.pyc"],
+  "run": {"program": "{python}", "args": ["{app}\\main.py"], "appUserModelId": "ACME.Hub"},
+  "requires": {"python": "3.10"},
+  "askFolder": true,
+  "shortcuts": {"ask": true, "startMenu": true, "desktop": false},
+  "purge": ["{localappdata}\\ACME Inc\\ACME.Hub"],
+  "output": "dist/{name}-{version}-setup.exe"
+}

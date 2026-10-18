@@ -2,3 +2,4 @@ __pycache__/
 acme.db
 acme.db-wal
 acme.db-shm
+/dist/
