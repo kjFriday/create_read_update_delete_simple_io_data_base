@@ -1,10 +1,14 @@
 """The hub's identity: version, title, icon files and what an install copies."""
 
 import hashlib
+import io
+import json
 import os
 import re
 import struct
+import tempfile
 import unittest
+from contextlib import redirect_stdout
 
 import main
 import version
@@ -34,6 +38,33 @@ class VersionTest(unittest.TestCase):
             self.assertIn(needed, files)
         self.assertFalse([f for f in files if os.path.basename(f).startswith("test_")])
         self.assertNotIn("export_mock.py", files)
+
+    def test_uninstall_hands_a_wizard_made_install_to_its_uninstaller(self):
+        """--uninstall passes --quiet, --purge and --root on to uninstall.exe and returns its exit code."""
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        plan = main.installer.plan(main.program(), HERE, env={}, root=tmp.name)
+        os.makedirs(plan["install_dir"])
+        with open(os.path.join(plan["install_dir"], main.installer.MARKER), "w") as f:
+            json.dump({"app_id": version.APP_ID, "name": version.NAME, "version": version.__version__, "files": [],
+                       "shortcuts": [], "installer": "ACME Wizard Maker 0.1.0"}, f)
+        calls = []
+
+        def refused(p, args):
+            calls.append((p["install_dir"], args))
+            raise main.installer.UninstallerFailed(4, f"Setup or uninstall of {version.NAME} is already running.")
+
+        self.addCleanup(setattr, main.installer, "run_uninstaller", main.installer.run_uninstaller)
+        main.installer.run_uninstaller = refused
+        with redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(main.main(["--uninstall", "--quiet", "--purge", "--root", tmp.name]), 4)
+        self.assertEqual(calls, [(plan["install_dir"], ["-quiet", "-purge", "-root", os.path.abspath(tmp.name)])])
+        self.assertIn("already running", out.getvalue())
+        self.assertTrue(os.path.isfile(os.path.join(plan["install_dir"], main.installer.MARKER)))
+        main.installer.run_uninstaller = lambda p, args: f"Removed {version.NAME} {version.__version__}."
+        with redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(main.main(["--uninstall", "--quiet", "--root", tmp.name]), 0)
+        self.assertIn("Removed", out.getvalue())
 
 
 class IconTest(unittest.TestCase):
