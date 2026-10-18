@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: test_seed.py
+# About: Seed and mock-export checks on one temporary database (seeding takes a few seconds, so it...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Seed and mock-export checks on one temporary database (seeding takes a few seconds, so it runs once)."""
 
 import json
@@ -125,3 +134,5 @@ class LoremTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=3fc2adf57ac6a746764038d41ce9a0d511db65da00fc637fd06c31fb314b599a ====

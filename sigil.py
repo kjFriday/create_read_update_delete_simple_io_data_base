@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: sigil.py
+# About: Identicons for employees and customers: a mirrored bit grid and a colour, both derived...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Identicons for employees and customers: a mirrored bit grid and a colour, both derived from a name.
 
 The same name always gives the same mark. Nothing is stored or fetched.
@@ -36,3 +45,5 @@ def tint(name):
 
 def sigil(name):
     return grid(name), tint(name)
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=cdb2a0a60cf17bf56a449e32a8b8491d504c8e05f272876e6fea962858a33511 ====

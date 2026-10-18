@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: db.py
+# About: ACME Inc. data layer — the shared SQLite file every ACME program opens by path (see...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """ACME Inc. data layer — the shared SQLite file every ACME program opens by path (see paths.py)."""
 
 import os
@@ -163,3 +172,5 @@ def delete_row(table, row_id):
     _check(table)
     with _session() as conn:
         return conn.execute(f"DELETE FROM {table} WHERE id = ?", (row_id,)).rowcount
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=af7c5936300bc6b870853f3a323167965ce530a0bb1577da368188435addcd1d ====

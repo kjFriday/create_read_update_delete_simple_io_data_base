@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: test_db.py
+# About: Tests for the db CRUD layer, each on a fresh temporary database.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Tests for the db CRUD layer, each on a fresh temporary database."""
 
 import os
@@ -87,3 +96,5 @@ class DbTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=871c29eda1e70be21fed3c8292aae4e876c5e60c399033b841724a89f381c16f ====

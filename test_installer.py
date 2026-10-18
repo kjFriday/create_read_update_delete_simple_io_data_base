@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: test_installer.py
+# About: Tests for installer.py.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 import datetime
 import json
 import os
@@ -252,3 +261,5 @@ class InstallerTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=a536d95bd396d3f6e2d83a54687221d5af6bcaa70c88d83521f7e12b1e9b9d2d ====

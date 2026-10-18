@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: main.py
+# About: ACME CRUD Hub — the desktop window over the shared database: one tab per table...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """ACME CRUD Hub — the desktop window over the shared database: one tab per table, Add/Update/Delete/Clear.
 
     python main.py [--db PATH]          open the window
@@ -341,3 +350,5 @@ def main(argv=None):
 
 if __name__ == "__main__":
     sys.exit(main())
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=7acb677a826fb9e16cec59c775b4d115a92e24cf44a358e03b02623cc04f49e6 ====

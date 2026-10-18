@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: installer.py
+# About: Install or uninstall an ACME program for the current user (no admin rights needed).
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Install or uninstall an ACME program for the current user (no admin rights needed).
 
 Install copies the program to %LOCALAPPDATA%\\Programs\\ACME Inc\\<name>\\ with an install.json marker,
@@ -328,3 +337,5 @@ def run_uninstaller(p, args, run=run_and_wait):
         raise UninstallerFailed(code, said or ("Uninstall cancelled." if code == CANCELLED
                                                else f"{WIZARD_UNINSTALLER} exited with {code}"))
     return said
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=5ee9930ca2f042f1173e7b6ad7cd1f9a836899757f7749413db0c4f676339a68 ====

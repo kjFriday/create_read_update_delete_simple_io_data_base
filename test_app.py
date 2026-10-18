@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: test_app.py
+# About: The hub's identity: version, title, icon files and what an install copies.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """The hub's identity: version, title, icon files and what an install copies."""
 
 import hashlib
@@ -95,3 +104,5 @@ class IconTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=e2e762696118a4d38e389fcb81ffaf102fcc26ca808a2a426e15dec6f0578ed5 ====

@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: test_sigil.py
+# About: Tests for sigil: fixed vectors for a few neutral names, plus the grid's invariants.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Tests for sigil: fixed vectors for a few neutral names, plus the grid's invariants."""
 
 import unittest
@@ -56,3 +65,5 @@ class SigilTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=f0b1a6e88ce8179eb92a5ab4359a3afc30d88b91969b4aba1524c5b0a6f00add ====

@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: export_mock.py
+# About: Write a mock-data snapshot into every ecosystem project, so each one runs on its own...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Write a mock-data snapshot into every ecosystem project, so each one runs on its own without the hub.
 
 Run after seed.py:  python export_mock.py  [portfolio root, default ..]
@@ -152,3 +161,5 @@ def export(root=ROOT):
 if __name__ == "__main__":
     for project, table, n in export():
         print(f"{project}/mock/{table}.json  {n}")
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=0c09203fe8211150bc8f397944432827b7b79e75c4220464d1eee6e71622a7b7 ====

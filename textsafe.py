@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: textsafe.py
+# About: Input guard for text that arrives from outside: drop invisible control characters, cap...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Input guard for text that arrives from outside: drop invisible control characters, cap the length.
 
 Removed: C0 controls except tab and newline, DEL, the whole C1 block (U+0080-U+009F, which includes
@@ -23,3 +32,5 @@ def clean(text, limit=LIMIT):
     if limit is not None:
         limit = max(limit, 0)  # a negative slice would count from the end
     return "".join(ch for ch in text if not refused(ch))[:limit]
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=42c41954fa50f771e55347fa11e3c6a1739a61e41572471fd37293987594d1b3 ====

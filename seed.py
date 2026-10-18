@@ -1,3 +1,12 @@
+# ==== ACME Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: seed.py
+# About: Fill acme.db with deterministic mock data.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
 """Fill acme.db with deterministic mock data. ACME Inc. and everyone in it is fictional.
 
 Each record gets its own generator, seeded by _mix(base_seed ^ table salt, record number), so a
@@ -270,3 +279,5 @@ if __name__ == "__main__":
         db.DB_PATH = os.path.abspath(args[args.index("--db") + 1])
     seed(fresh="--fresh" in args)
     print(f"seeded {db.DB_PATH}")
+
+# ==== stamp v1 | author=kjFriday | hmac-sha256=b5875603d7e32f67b4f55fbc333c2a00f6b005638ffbbf1fdbefff8d4546c333 ====
