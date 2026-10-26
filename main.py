@@ -244,7 +244,7 @@ class HubWindow:
         if self.small:
             win.big = self.small.zoom(3)  # 96 px of whole-pixel blocks
             ttk.Label(win, image=win.big).pack(padx=24, pady=(20, 8))
-        text = (f"{NAME} {__version__}\n{PUBLISHER}\n\nDatabase: {db.DB_PATH}\n\n{CREDIT}\n"
+        text = (f"{NAME} {__version__}\n{PUBLISHER}\nACME: American Company Management Engine\n\nDatabase: {db.DB_PATH}\n\n{CREDIT}\n"
                 "Code: AGPL-3.0. All data is fictional.")
         ttk.Label(win, text=text, justify="center", wraplength=420).pack(padx=24, pady=(0, 12))
         ttk.Button(win, text="OK", command=win.destroy).pack(pady=(0, 16))
@@ -351,4 +351,4 @@ def main(argv=None):
 if __name__ == "__main__":
     sys.exit(main())
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=7acb677a826fb9e16cec59c775b4d115a92e24cf44a358e03b02623cc04f49e6 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=f673f0ccf98b0fc1ad64aa545b85d079c86b3ce7f60ac8ac664996d0975f900f ====

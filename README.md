@@ -6,6 +6,9 @@ The desktop program that owns ACME Inc.'s shared database: one tab per table (em
 products, orders, tickets, documents, events) with Add / Update / Delete. ACME Inc. and all its data
 are fictional. Python 3.10+, standard library only (tkinter, sqlite3).
 
+ACME stands for **American Company Management Engine**. The hub is the engine's home: it owns the
+contracts every program shares, written down in [ENGINE.md](ENGINE.md).
+
 The other five ACME programs open the same SQLite file **by path**; nothing else connects them. The
 hub creates the file and its schema (`db.py` `SCHEMA`), and **File → Seed demo data** fills it with
 the deterministic mock data from `seed.py` (after saving a dated backup copy next to it).
