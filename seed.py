@@ -1,13 +1,22 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
 # Project: create_read_update_delete_simple_io_data_base | File: seed.py
-# About: Fill acme.db with deterministic mock data.
+# About: Fill generic_company.db with deterministic mock data.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
 # the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-"""Fill acme.db with deterministic mock data. ACME Inc. and everyone in it is fictional.
+# ==== Generic Company Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: seed.py
+# About: Fill generic_company.db with deterministic mock data.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+"""Fill generic_company.db with deterministic mock data. Generic Company Inc. and everyone in it is fictional.
 
 Each record gets its own generator, seeded by _mix(base_seed ^ table salt, record number), so a
 change to one table's row count or draws never shifts the values in another table.
@@ -136,7 +145,7 @@ def _counts(conn):
 
 
 def backup(path=None, when=None):
-    """Copy the database (with any WAL content) to acme-YYYYMMDD-HHMMSS.db beside it and check the copy's
+    """Copy the database (with any WAL content) to generic_company-YYYYMMDD-HHMMSS.db beside it and check the copy's
     row counts; -> the backup path, or None when there is nothing to keep."""
     path = path or db.DB_PATH
     if not os.path.exists(path) or os.path.getsize(path) == 0:
@@ -187,7 +196,7 @@ def seed(base_seed=42, fresh=False):
     for i in range(COUNTS["employees"]):
         r = _rng(base_seed, "employees", i)
         n = name(r, taken)
-        rows.append({"name": n, "role": r.choice(ROLES), "email": email(n, "acme.example")})
+        rows.append({"name": n, "role": r.choice(ROLES), "email": email(n, "generic-company.example")})
     employees = db.create_rows("employees", rows)
     support = [eid for eid, row in zip(employees, rows) if row["role"] in ("Support", "Billing", "Logistics")]
 
@@ -280,4 +289,4 @@ if __name__ == "__main__":
     seed(fresh="--fresh" in args)
     print(f"seeded {db.DB_PATH}")
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=b5875603d7e32f67b4f55fbc333c2a00f6b005638ffbbf1fdbefff8d4546c333 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=94d6b879a96ea88989cc982a428155aee9d7c94c86d28c5ed8b971b444e70886 ====

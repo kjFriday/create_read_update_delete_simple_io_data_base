@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: create_read_update_delete_simple_io_data_base | File: export_mock.py
+# About: Write a mock-data snapshot into every ecosystem project, so each one runs on its own...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: create_read_update_delete_simple_io_data_base | File: export_mock.py
 # About: Write a mock-data snapshot into every ecosystem project, so each one runs on its own...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -30,7 +39,7 @@ ROOT = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.pat
 
 README = """# mock/
 
-A snapshot of the CRUD hub's seeded data, so this project runs on its own. ACME Inc. and every
+A snapshot of the CRUD hub's seeded data, so this project runs on its own. Generic Company Inc. and every
 person, order and ticket here are fictional; names are random pairs from common-name lists and
 free text is lorem ipsum.
 
@@ -162,4 +171,4 @@ if __name__ == "__main__":
     for project, table, n in export():
         print(f"{project}/mock/{table}.json  {n}")
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=0c09203fe8211150bc8f397944432827b7b79e75c4220464d1eee6e71622a7b7 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=e2a3901f6ccbe31a0507f4f9c30ba1bb20787dddbb238b09a5b6a2662e6836e1 ====

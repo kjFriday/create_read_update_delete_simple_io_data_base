@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: create_read_update_delete_simple_io_data_base | File: test_seed.py
+# About: Seed and mock-export checks on one temporary database (seeding takes a few seconds, so it...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: create_read_update_delete_simple_io_data_base | File: test_seed.py
 # About: Seed and mock-export checks on one temporary database (seeding takes a few seconds, so it...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -27,7 +36,7 @@ class SeedTest(unittest.TestCase):
     def setUpClass(cls):
         cls.tmp = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
         cls.old_path = db.DB_PATH
-        db.DB_PATH = os.path.join(cls.tmp.name, "acme.db")
+        db.DB_PATH = os.path.join(cls.tmp.name, "generic_company.db")
         seed.seed()
 
     @classmethod
@@ -93,7 +102,7 @@ class ReseedTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
         self.old_path = db.DB_PATH
-        db.DB_PATH = os.path.join(self.tmp.name, "acme.db")
+        db.DB_PATH = os.path.join(self.tmp.name, "generic_company.db")
         db.init_db()
         cid = db.create_row("customers", {"name": "Ada Reyes"})
         db.create_row("tickets", {"customer_id": cid, "title": "Invoice question"})
@@ -105,7 +114,7 @@ class ReseedTest(unittest.TestCase):
     def test_backup_copies_every_row(self):
         from datetime import datetime
         target = seed.backup(when=datetime(2026, 10, 17, 9, 30, 5))
-        self.assertEqual(os.path.basename(target), "acme-20261017-093005.db")
+        self.assertEqual(os.path.basename(target), "generic_company-20261017-093005.db")
         with sqlite3.connect(target) as conn:
             self.assertEqual(conn.execute("SELECT title FROM tickets").fetchall(), [("Invoice question",)])
         self.assertIsNone(seed.backup(os.path.join(self.tmp.name, "missing.db")))
@@ -135,4 +144,4 @@ class LoremTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=3fc2adf57ac6a746764038d41ce9a0d511db65da00fc637fd06c31fb314b599a ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=650cdcd60b5da2270e31a01c833c2f344a8db789870a1edf5bdf729efcd1599b ====

@@ -1,9 +1,9 @@
 {
-  "id": "ACME.Hub",
-  "name": "ACME CRUD Hub",
+  "id": "GenericCompany.Hub",
+  "name": "Generic Company CRUD Hub",
   "version": "0.2.0",
-  "publisher": "ACME Inc. (fictional)",
-  "group": "ACME Inc",
+  "publisher": "Generic Company Inc. (fictional)",
+  "group": "Generic Company Inc",
   "icon": "icon/app.ico",
   "license": "LICENSE",
   "files": [
@@ -19,10 +19,10 @@
     {"from": "icon", "to": "icon"}
   ],
   "exclude": ["test_*", "__pycache__", "*.pyc"],
-  "run": {"program": "{python}", "args": ["{app}\\main.py"], "appUserModelId": "ACME.Hub"},
+  "run": {"program": "{python}", "args": ["{app}\\main.py"], "appUserModelId": "GenericCompany.Hub"},
   "requires": {"python": "3.10"},
   "askFolder": true,
   "shortcuts": {"ask": true, "startMenu": true, "desktop": false},
-  "purge": ["{localappdata}\\ACME Inc\\ACME.Hub"],
+  "purge": ["{localappdata}\\Generic Company Inc\\GenericCompany.Hub"],
   "output": "dist/{name}-{version}-setup.exe"
 }

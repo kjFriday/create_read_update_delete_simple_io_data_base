@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: create_read_update_delete_simple_io_data_base | File: textsafe.py
+# About: Input guard for text that arrives from outside: drop invisible control characters, cap...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: create_read_update_delete_simple_io_data_base | File: textsafe.py
 # About: Input guard for text that arrives from outside: drop invisible control characters, cap...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -33,4 +42,4 @@ def clean(text, limit=LIMIT):
         limit = max(limit, 0)  # a negative slice would count from the end
     return "".join(ch for ch in text if not refused(ch))[:limit]
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=42c41954fa50f771e55347fa11e3c6a1739a61e41572471fd37293987594d1b3 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=16f97683f9ac51146b679ba8030e8c499f6d96d8192b46560b37bbf83f83a159 ====

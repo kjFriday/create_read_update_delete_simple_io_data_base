@@ -1,13 +1,22 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
 # Project: create_read_update_delete_simple_io_data_base | File: db.py
-# About: ACME Inc. data layer — the shared SQLite file every ACME program opens by path (see...
+# About: Generic Company Inc. data layer — the shared SQLite file every Generic Company program...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
 # the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-"""ACME Inc. data layer — the shared SQLite file every ACME program opens by path (see paths.py)."""
+# ==== Generic Company Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: db.py
+# About: Generic Company Inc. data layer — the shared SQLite file every Generic Company program opens by path (see...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+"""Generic Company Inc. data layer — the shared SQLite file every Generic Company program opens by path (see paths.py)."""
 
 import os
 import sqlite3
@@ -173,4 +182,4 @@ def delete_row(table, row_id):
     with _session() as conn:
         return conn.execute(f"DELETE FROM {table} WHERE id = ?", (row_id,)).rowcount
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=af7c5936300bc6b870853f3a323167965ce530a0bb1577da368188435addcd1d ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=0691f91116a9869a09463ff4909b347ca1feb5e4d2d3de466908857191a0d1b7 ====

@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: create_read_update_delete_simple_io_data_base | File: lorem.py
+# About: Deterministic lorem ipsum: placeholder words, sentences and paragraphs drawn from a...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: create_read_update_delete_simple_io_data_base | File: lorem.py
 # About: Deterministic lorem ipsum: placeholder words, sentences and paragraphs drawn from a...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -34,4 +43,4 @@ def paragraph(rng, low=2, high=4, limit=None):
         text = text[:limit].rsplit(" ", 1)[0].rstrip(",") + "."
     return text
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=68028771d26497e8b8ff2dca4261cbe6479a35463d06c7730d1f46dba24f1325 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=43018d3a5da80fcda8adf49b21153bccdc00a394e50ba2bf2c3329dc399f4c16 ====

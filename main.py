@@ -1,13 +1,22 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
 # Project: create_read_update_delete_simple_io_data_base | File: main.py
-# About: ACME CRUD Hub — the desktop window over the shared database: one tab per table...
+# About: Generic Company CRUD Hub — the desktop window over the shared database: one tab per...
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
 # You may change this file under the AGPL-3.0. The stamp at the end marks
 # the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
 # Reused code, if any, is mapped in PROVENANCE.md.
 # ========================================================================
 
-"""ACME CRUD Hub — the desktop window over the shared database: one tab per table, Add/Update/Delete/Clear.
+# ==== Generic Company Inc. portfolio ===============================================
+# Project: create_read_update_delete_simple_io_data_base | File: main.py
+# About: Generic Company CRUD Hub — the desktop window over the shared database: one tab per table...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+"""Generic Company CRUD Hub — the desktop window over the shared database: one tab per table, Add/Update/Delete/Clear.
 
     python main.py [--db PATH]          open the window
     python main.py --install            install for this user (Start menu, Apps & features)
@@ -244,7 +253,7 @@ class HubWindow:
         if self.small:
             win.big = self.small.zoom(3)  # 96 px of whole-pixel blocks
             ttk.Label(win, image=win.big).pack(padx=24, pady=(20, 8))
-        text = (f"{NAME} {__version__}\n{PUBLISHER}\nACME: American Company Management Engine\n\nDatabase: {db.DB_PATH}\n\n{CREDIT}\n"
+        text = (f"{NAME} {__version__}\n{PUBLISHER}\nGeneric Company: American Company Management Engine\n\nDatabase: {db.DB_PATH}\n\n{CREDIT}\n"
                 "Code: AGPL-3.0. All data is fictional.")
         ttk.Label(win, text=text, justify="center", wraplength=420).pack(padx=24, pady=(0, 12))
         ttk.Button(win, text="OK", command=win.destroy).pack(pady=(0, 16))
@@ -286,18 +295,18 @@ def do_install(remove=False, root=None, desktop=False, purge=False, quiet=False)
     if remove:
         plan = installer.located(plan)
         if installer.wizard_uninstaller(plan):
-            # a setup made by ACME Wizard Maker installed it: its uninstaller keeps the files changed since
+            # a setup made by Generic Company Wizard Maker installed it: its uninstaller keeps the files changed since
             return installer.run_uninstaller(plan, installer.uninstall_args(root, quiet, purge)) or f"{NAME} uninstalled."
         purge_dir = paths.data_dir(APP_ID) if purge else None
         gone = installer.uninstall(plan, purge_dir=purge_dir)
         return f"{NAME} uninstalled." + ("" if gone else " (It was not installed.)") + " The database is kept."
     installer.install(plan)
-    return f"{NAME} {__version__} installed in {plan['install_dir']}. Find it in the Start menu under ACME Inc."
+    return f"{NAME} {__version__} installed in {plan['install_dir']}. Find it in the Start menu under Generic Company Inc."
 
 
 def parse(argv):
     ap = argparse.ArgumentParser(prog="main.py", description=NAME)
-    ap.add_argument("--db", help="shared database file (default: saved setting or %%LOCALAPPDATA%%\\ACME Inc\\acme.db)")
+    ap.add_argument("--db", help="shared database file (default: saved setting or %%LOCALAPPDATA%%\\Generic Company Inc\\generic_company.db)")
     ap.add_argument("--version", action="store_true")
     ap.add_argument("--install", action="store_true", help="install for this user")
     ap.add_argument("--desktop-shortcut", action="store_true", help="with --install: add a desktop shortcut")
@@ -351,4 +360,4 @@ def main(argv=None):
 if __name__ == "__main__":
     sys.exit(main())
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=f673f0ccf98b0fc1ad64aa545b85d079c86b3ce7f60ac8ac664996d0975f900f ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=4fe032bce04d2e70a077421bc3a5b33053b497158039c3f9dc5e8e13b68a0e23 ====

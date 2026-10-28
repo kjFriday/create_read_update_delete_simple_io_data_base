@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: create_read_update_delete_simple_io_data_base | File: test_app.py
+# About: The hub's identity: version, title, icon files and what an install copies.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: create_read_update_delete_simple_io_data_base | File: test_app.py
 # About: The hub's identity: version, title, icon files and what an install copies.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -39,7 +48,7 @@ class VersionTest(unittest.TestCase):
         self.assertTrue(version.TITLE.endswith(" " + version.__version__))
         p = main.installer.plan(main.program(), HERE, env={}, root=os.path.join(HERE, "_never_written"))
         self.assertEqual(p["registry"]["DisplayVersion"], version.__version__)
-        self.assertEqual(p["app_id"], "ACME.Hub")
+        self.assertEqual(p["app_id"], "GenericCompany.Hub")
 
     def test_install_copies_runtime_only(self):
         files = main.program().files
@@ -56,7 +65,7 @@ class VersionTest(unittest.TestCase):
         os.makedirs(plan["install_dir"])
         with open(os.path.join(plan["install_dir"], main.installer.MARKER), "w") as f:
             json.dump({"app_id": version.APP_ID, "name": version.NAME, "version": version.__version__, "files": [],
-                       "shortcuts": [], "installer": "ACME Wizard Maker 0.1.0"}, f)
+                       "shortcuts": [], "installer": "Generic Company Wizard Maker 0.1.0"}, f)
         calls = []
 
         def refused(p, args):
@@ -105,4 +114,4 @@ class IconTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=e2e762696118a4d38e389fcb81ffaf102fcc26ca808a2a426e15dec6f0578ed5 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=b7e9bfa91bcfe913e4b3af6087a52d7ccfe87280c73bcbf3ad3d082ad264fc1e ====

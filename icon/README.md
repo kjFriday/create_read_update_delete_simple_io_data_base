@@ -1,6 +1,6 @@
 # icon/
 
-ACME CRUD Hub's icon is **database.png** from the Silk icon set by Mark James
+Generic Company CRUD Hub's icon is **database.png** from the Silk icon set by Mark James
 (famfamfam.com/lab/icons/silk), licensed under
 [Creative Commons Attribution 2.5](http://creativecommons.org/licenses/by/2.5/).
 

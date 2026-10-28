@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: create_read_update_delete_simple_io_data_base | File: test_schema_export.py
+# About: ==== Generic Company Inc. portfolio ===============================================...
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: create_read_update_delete_simple_io_data_base | File: test_schema_export.py
 # About: Tests for schema_export.py.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -50,4 +59,4 @@ class SchemaExportTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=3d449869aa52462d2df7d0b367fcc9a02c86be121f27795d7b11e964334b31f4 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=1f094f7a01ab1f528f0af15950d42db64efa10b9d9156b375b9542f479f29afa ====

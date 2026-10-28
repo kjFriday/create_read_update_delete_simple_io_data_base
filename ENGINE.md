@@ -1,7 +1,7 @@
-# The ACME engine
+# The Generic Company engine
 
-**ACME** stands for **American Company Management Engine**. The engine is not one program. It is the
-seven ACME programs and the contracts they share. ACME Inc. and all its data are fictional.
+**Generic Company** stands for **American Company Management Engine**. The engine is not one program. It is the
+seven Generic Company programs and the contracts they share. Generic Company Inc. and all its data are fictional.
 
 ## The one rule
 
@@ -19,8 +19,8 @@ in `db.py` / `export_mock.py`, and then in each program.
 
 - One SQLite file. The hub creates it, and its schema is `db.py` `SCHEMA`. No other program changes
   the schema.
-- Path, in this order: `--db PATH`, the `ACME_DB` environment variable, the program's saved setting,
-  then `%LOCALAPPDATA%\ACME Inc\acme.db`.
+- Path, in this order: `--db PATH`, the `GENERIC_COMPANY_DB` environment variable, the program's saved setting,
+  then `%LOCALAPPDATA%\Generic Company Inc\generic_company.db`.
 - Each program writes only the rows it owns:
 
 | Program | Writes |
@@ -43,14 +43,14 @@ in `db.py` / `export_mock.py`, and then in each program.
 
 ### 3. Settings (JSON)
 
-- `%LOCALAPPDATA%\ACME Inc\<app id>\settings.json` is a JSON object: `{"db": "<path>", "version": 1}`.
+- `%LOCALAPPDATA%\Generic Company Inc\<app id>\settings.json` is a JSON object: `{"db": "<path>", "version": 1}`.
 - Unknown keys are kept. Writes go to a temp file that is then swapped in.
 
 ### 4. Install (JSON)
 
 - `install.json` marker in the install folder: `app_id`, `name`, `version`, `install_dir`, the files
   copied, the shortcuts and the Apps & features entry.
-- ACME Wizard Maker's `setup.exe` writes the same marker, so either installer can take over an
+- Generic Company Wizard Maker's `setup.exe` writes the same marker, so either installer can take over an
   install made by the other.
 - Flags every program accepts: `--db`, `--install`, `--uninstall`, `--root DIR`, `--version`,
   `--quiet`, `--smoke FILE`.
@@ -59,15 +59,15 @@ in `db.py` / `export_mock.py`, and then in each program.
 
 | Program | App id | Language |
 |---|---|---|
-| CRUD Hub | `ACME.Hub` | Python |
-| Doc Pipeline | `ACME.DocPipe` | Python |
-| Journal | `ACME.CMS` | Go |
-| Notify Hub | `ACME.Notify` | Go |
-| Ticket Tracker | `ACME.Tickets` | Rust |
-| Data Dash | `ACME.Dash` | Rust |
-| Wizard Maker | `ACME.Wizard` | Go |
+| CRUD Hub | `GenericCompany.Hub` | Python |
+| Doc Pipeline | `GenericCompany.DocPipe` | Python |
+| Journal | `GenericCompany.CMS` | Go |
+| Notify Hub | `GenericCompany.Notify` | Go |
+| Ticket Tracker | `GenericCompany.Tickets` | Rust |
+| Data Dash | `GenericCompany.Dash` | Rust |
+| Wizard Maker | `GenericCompany.Wizard` | Go |
 
-Title bar: `ACME Inc. — <name> <version>`.
+Title bar: `Generic Company Inc. — <name> <version>`.
 
 ## Paring down (small, low-effort steps)
 

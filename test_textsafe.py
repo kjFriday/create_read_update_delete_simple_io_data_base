@@ -1,4 +1,13 @@
-# ==== ACME Inc. portfolio ===============================================
+# ==== Generic Company Inc. portfolio ====================================
+# Project: create_read_update_delete_simple_io_data_base | File: test_textsafe.py
+# About: Tests for textsafe.clean.
+# Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
+# You may change this file under the AGPL-3.0. The stamp at the end marks
+# the version kjFriday wrote. Verify with the portfolio's stamp.py --check.
+# Reused code, if any, is mapped in PROVENANCE.md.
+# ========================================================================
+
+# ==== Generic Company Inc. portfolio ===============================================
 # Project: create_read_update_delete_simple_io_data_base | File: test_textsafe.py
 # About: Tests for textsafe.clean.
 # Copyright (c) 2026 kjFriday | SPDX-License-Identifier: AGPL-3.0-only
@@ -57,4 +66,4 @@ class CleanTest(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# ==== stamp v1 | author=kjFriday | hmac-sha256=4b4f589f12801849c200a94ebba79a72b0cc94c741843d7f61689bd858317fc6 ====
+# ==== stamp v1 | author=kjFriday | hmac-sha256=b54c374e9d54c8267bb728e33dd42826211b173fc76e409f1776c9537a64a5d0 ====

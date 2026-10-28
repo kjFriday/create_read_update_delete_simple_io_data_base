@@ -1,5 +1,5 @@
 __pycache__/
-acme.db
-acme.db-wal
-acme.db-shm
+generic_company.db
+generic_company.db-wal
+generic_company.db-shm
 /dist/

@@ -1,15 +1,15 @@
 <img src="icon/app-256.png" width="64" height="64" alt="" style="image-rendering: pixelated">
 
-# ACME CRUD Hub
+# Generic Company CRUD Hub
 
-The desktop program that owns ACME Inc.'s shared database: one tab per table (employees, customers,
-products, orders, tickets, documents, events) with Add / Update / Delete. ACME Inc. and all its data
+The desktop program that owns Generic Company Inc.'s shared database: one tab per table (employees, customers,
+products, orders, tickets, documents, events) with Add / Update / Delete. Generic Company Inc. and all its data
 are fictional. Python 3.10+, standard library only (tkinter, sqlite3).
 
-ACME stands for **American Company Management Engine**. The hub is the engine's home: it owns the
+Generic Company stands for **American Company Management Engine**. The hub is the engine's home: it owns the
 contracts every program shares, written down in [ENGINE.md](ENGINE.md).
 
-The other five ACME programs open the same SQLite file **by path**; nothing else connects them. The
+The other five Generic Company programs open the same SQLite file **by path**; nothing else connects them. The
 hub creates the file and its schema (`db.py` `SCHEMA`), and **File → Seed demo data** fills it with
 the deterministic mock data from `seed.py` (after saving a dated backup copy next to it).
 
@@ -19,8 +19,8 @@ the deterministic mock data from `seed.py` (after saving a dated backup copy nex
 python main.py
 ```
 
-The database is, in order: `--db PATH`, the `ACME_DB` environment variable, the path saved with
-**File → Database…**, or `%LOCALAPPDATA%\ACME Inc\acme.db`.
+The database is, in order: `--db PATH`, the `GENERIC_COMPANY_DB` environment variable, the path saved with
+**File → Database…**, or `%LOCALAPPDATA%\Generic Company Inc\generic_company.db`.
 
 ## Install
 
@@ -29,7 +29,7 @@ python main.py --install
 ```
 
 Installs for the current user (no admin rights): copies the program to
-`%LOCALAPPDATA%\Programs\ACME Inc\ACME CRUD Hub\`, adds **ACME Inc → ACME CRUD Hub** to the Start menu
+`%LOCALAPPDATA%\Programs\Generic Company Inc\Generic Company CRUD Hub\`, adds **Generic Company Inc → Generic Company CRUD Hub** to the Start menu
 (`--desktop-shortcut` adds one on the desktop too) and lists it in **Apps & features**, where it can be
 uninstalled. Or:
 
@@ -43,7 +43,7 @@ shortcut runs `pythonw.exe` from the Python that installed it, so reinstall afte
 
 Other flags: `--version`, `--smoke FILE` (open the window, write a JSON report, close).
 
-`wizard-maker.exe build setup.json` (ACME Wizard Maker) makes the setup, `dist\ACME CRUD Hub-0.2.0-setup.exe`.
+`wizard-maker.exe build setup.json` (Generic Company Wizard Maker) makes the setup, `dist\Generic Company CRUD Hub-0.2.0-setup.exe`.
 
 ## Seed and snapshots
 
